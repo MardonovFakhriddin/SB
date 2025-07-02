@@ -2,36 +2,25 @@ package repository
 
 import (
 	"SB/internal/db"
-	"SB/internal/errs"
 	"SB/internal/models"
 )
 
 // Создать аккаунт
-func CreateAccount(account *models.Account) (int, error) {
-	var id int
+func CreateAccount(account *models.Account) error {
 	err := db.GetDBConn().QueryRow(`
-		INSERT INTO accounts (user_id, balance, currency, active, created_at)
-		VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING id`,
-		account.UserID, account.Balance, account.Currency, account.Active).Scan(&id)
-	return id, err
+		INSERT INTO accounts (user_id, currency, phone_number)
+		VALUES ($1, $2, $3) RETURNING id`,
+		account.UserID, account.Currency, account.PhoneNumber).Scan(&account.ID)
+	return err
 }
 
 // Изменить аккаунт (только если active = true)
 func UpdateAccount(account *models.Account) error {
-	var active bool
-	err := db.GetDBConn().Get(&active, `SELECT active FROM accounts WHERE id = $1 AND deleted_at IS NULL`, account.ID)
-	if err != nil {
-		return err
-	}
-	if !active {
-		return errs.ErrAccountNotActive
-	}
-
-	_, err = db.GetDBConn().Exec(`
+	_, err := db.GetDBConn().Exec(`
 		UPDATE accounts
-		SET balance = $1, currency = $2, updated_at = CURRENT_TIMESTAMP
-		WHERE id = $3 AND active = TRUE AND deleted_at IS NULL`,
-		account.Balance, account.Currency, account.ID)
+		SET balance = $1, currency = $2, updated_at = CURRENT_TIMESTAMP, phone_number = $3
+		WHERE id = $4 AND active = TRUE AND deleted_at IS NULL`,
+		account.Balance, account.Currency, account.PhoneNumber, account.ID)
 	return err
 }
 
@@ -39,8 +28,8 @@ func UpdateAccount(account *models.Account) error {
 func DeleteAccount(id int) error {
 	_, err := db.GetDBConn().Exec(`
 		UPDATE accounts
-		SET deleted_at = CURRENT_TIMESTAMP
-		WHERE id = $1 AND deleted_at IS NULL`, id)
+		SET deleted_at = CURRENT_TIMESTAMP, active = false
+		WHERE id = $1`, id)
 	return err
 }
 
@@ -48,27 +37,28 @@ func DeleteAccount(id int) error {
 func GetAccountByID(id int) (models.Account, error) {
 	var account models.Account
 	err := db.GetDBConn().Get(&account, `
-		SELECT id, user_id, balance, currency, active, created_at, updated_at, deleted_at
+		SELECT id, user_id, phone_number, balance, currency, active, created_at, updated_at, deleted_at
 		FROM accounts
 		WHERE id = $1 AND active = TRUE AND deleted_at IS NULL`, id)
 	return account, err
 }
 
 // Взять все аккаунты пользователя по user_id (только если active = true)
-func GetAccountsByUserID(userID int) ([]models.Account, error) {
-	var accounts []models.Account
-	err := db.GetDBConn().Select(&accounts, `
-		SELECT id, user_id, balance, currency, active, created_at, updated_at, deleted_at
+func GetAccountsByUserID(userID int) (*models.Account, error) {
+	var account models.Account
+	err := db.GetDBConn().Get(&account, `
+		SELECT id, user_id, phone_number, balance, currency, active, created_at, updated_at, deleted_at
 		FROM accounts
-		WHERE user_id = $1 AND active = TRUE AND deleted_at IS NULL`, userID)
-	return accounts, err
+		WHERE user_id = $1 AND active = TRUE AND deleted_at IS NULL 
+		LIMIT 1`, userID)
+	return &account, err
 }
 
 // Взять все неактивные аккаунты
 func GetInactiveAccounts() ([]models.Account, error) {
 	var accounts []models.Account
 	err := db.GetDBConn().Select(&accounts, `
-		SELECT id, user_id, balance, currency, active, created_at, updated_at, deleted_at
+		SELECT id, user_id, phone_number, balance, currency, active, created_at, updated_at, deleted_at
 		FROM accounts
 		WHERE active = FALSE AND deleted_at IS NULL`)
 	return accounts, err

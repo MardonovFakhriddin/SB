@@ -1,0 +1,45 @@
+ERROR: 2025/07/01 23:58:21 postgres.go:32: [db] ConnectDB(): error during connect to postgres: pq: ������������ "postgres" �� ������ �������� ����������� (�� ������)
+ERROR: 2025/07/02 00:00:24 postgres.go:32: [db] ConnectDB(): error during connect to postgres: pq: ������������ "postgres" �� ������ �������� ����������� (�� ������)
+ERROR: 2025/07/02 00:00:40 ddl.go:71: [db] InitMigrations(): error during create credits table: pq: ошибка синтаксиса (примерное положение: "active")
+ERROR: 2025/07/02 00:20:17 user.go:37: createUser: service.CreateUser: user with this name already exists
+ERROR: 2025/07/02 00:21:01 user.go:37: createUser: service.CreateUser: user with this name already exists
+ERROR: 2025/07/02 00:21:11 user.go:37: createUser: service.CreateUser: user with this name already exists
+ERROR: 2025/07/02 00:29:07 user.go:37: createUser: service.CreateUser: db is not available at the moment
+ERROR: 2025/07/02 00:30:00 user.go:37: createUser: service.CreateUser: user with this name already exists
+ERROR: 2025/07/02 00:30:29 user.go:37: createUser: service.CreateUser: user with this name already exists
+ERROR: 2025/07/02 00:30:32 user.go:37: createUser: service.CreateUser: user with this name already exists
+ERROR: 2025/07/02 00:32:11 user.go:37: createUser: service.CreateUser: user with this name already exists
+ERROR: 2025/07/02 00:46:13 user.go:67: updateUserHandler: service.UpdateUser: not found
+ERROR: 2025/07/02 00:47:32 user.go:67: updateUserHandler: service.UpdateUser: sql: Scan error on column index 4, name "updated_at": unsupported Scan, storing driver.Value type <nil> into type *time.Time
+ERROR: 2025/07/02 00:48:20 user.go:67: updateUserHandler: service.UpdateUser: sql: Scan error on column index 4, name "updated_at": unsupported Scan, storing driver.Value type <nil> into type *time.Time
+ERROR: 2025/07/02 00:57:15 user.go:102: deleteUserHandler: service.DeleteUser: db is not available at the moment
+ERROR: 2025/07/02 00:59:03 user.go:103: deleteUserHandler: strconv.Atoi: strconv.Atoi: parsing "": invalid syntax
+ERROR: 2025/07/02 00:59:59 user.go:102: deleteUserHandler: service.DeleteUser: db is not available at the moment
+ERROR: 2025/07/02 01:01:55 user.go:102: deleteUserHandler: service.DeleteUser: expected slice but got struct
+ERROR: 2025/07/02 01:05:07 user.go:102: deleteUserHandler: service.DeleteUser: expected slice but got struct
+ERROR: 2025/07/02 01:05:42 user.go:102: deleteUserHandler: service.DeleteUser: pq: аргумент конструкции AND должен иметь тип boolean, а не timestamp with time zone
+ERROR: 2025/07/02 01:06:38 user.go:102: deleteUserHandler: service.DeleteUser: pq: аргумент конструкции AND должен иметь тип boolean, а не timestamp with time zone
+ERROR: 2025/07/02 01:07:08 user.go:102: deleteUserHandler: service.DeleteUser: pq: аргумент конструкции AND должен иметь тип boolean, а не timestamp with time zone
+ERROR: 2025/07/02 01:08:25 user.go:102: deleteUserHandler: service.DeleteUser: pq: аргумент конструкции AND должен иметь тип boolean, а не timestamp with time zone
+ERROR: 2025/07/02 01:14:35 user.go:136: getUserByIDHandler: service.GetUserByID: missing destination name password in *models.User
+ERROR: 2025/07/02 01:14:39 user.go:136: getUserByIDHandler: service.GetUserByID: missing destination name password in *models.User
+ERROR: 2025/07/02 01:15:53 user.go:136: getUserByIDHandler: service.GetUserByID: missing destination name password in *models.User
+ERROR: 2025/07/02 01:32:03 user.go:181: authenticateHandler: service.AuthenticateUser: not found
+ERROR: 2025/07/02 01:32:17 user.go:181: authenticateHandler: service.AuthenticateUser: invalid password
+ERROR: 2025/07/02 01:37:29 user.go:215: restoreUserHandler: service.RestoreUser: pq: столбец "deleted_at" имеет тип timestamp without time zone, а выражение - boolean
+ERROR: 2025/07/02 01:44:49 user.go:246: findUserByName: service.FindUserByName: pq: got 1 parameters but the statement requires 0
+ERROR: 2025/07/02 01:44:56 user.go:246: findUserByName: service.FindUserByName: pq: got 1 parameters but the statement requires 0
+ERROR: 2025/07/02 01:47:13 user.go:246: findUserByName: service.FindUserByName: pq: ошибка синтаксиса (примерное положение: "(")
+ERROR: 2025/07/02 02:24:27 ddl.go:36: [db] InitMigrations(): error during create accounts table: pq: ошибка синтаксиса (примерное положение: "(")
+ERROR: 2025/07/02 02:24:46 ddl.go:36: [db] InitMigrations(): error during create accounts table: pq: ошибка синтаксиса (примерное положение: "(")
+ERROR: 2025/07/02 02:26:41 ddl.go:36: [db] InitMigrations(): error during create accounts table: pq: ошибка синтаксиса (примерное положение: "(")
+ERROR: 2025/07/02 15:23:23 account.go:65: createAccountHandler: service.CreateAccount: invalid currency
+ERROR: 2025/07/02 15:23:44 account.go:65: createAccountHandler: service.CreateAccount: pq: столбец "phone_number" в таблице "accounts" не существует
+ERROR: 2025/07/02 15:41:08 account.go:102: updateAccountHandler: ctx.ShouldBindJSON: invalid character '}' looking for beginning of object key string
+ERROR: 2025/07/02 15:41:29 account.go:131: updateAccountHandler: service.UpdateAccount: sql: Scan error on column index 7, name "updated_at": unsupported Scan, storing driver.Value type <nil> into type *time.Time
+ERROR: 2025/07/02 16:06:27 user.go:314: authenticateHandler: service.AuthenticateUser: not found
+ERROR: 2025/07/02 16:06:50 user.go:314: authenticateHandler: service.AuthenticateUser: invalid password
+ERROR: 2025/07/02 16:06:55 user.go:314: authenticateHandler: service.AuthenticateUser: invalid password
+ERROR: 2025/07/02 18:06:38 transfer.go:55: createTransferHandler: service.CreateTransferr: someone is trying to break in to our system
+ERROR: 2025/07/02 18:07:32 transfer.go:55: createTransferHandler: service.CreateTransferr: pq: столбец "currency" в таблице "transactions" не существует
+ERROR: 2025/07/02 18:07:59 transfer.go:55: createTransferHandler: service.CreateTransferr: pq: неверный синтаксис для типа bigint: "0001-01-01 00:00:00Z"

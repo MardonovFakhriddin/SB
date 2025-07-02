@@ -1,0 +1,801 @@
+definitions:
+  controller.authenticateRequest:
+    properties:
+      full_name:
+        type: string
+      password:
+        type: string
+    required:
+    - full_name
+    - password
+    type: object
+  controller.createAccountRequest:
+    properties:
+      currency:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  controller.createTransferRequest:
+    properties:
+      amount:
+        type: integer
+      currency:
+        type: string
+      from_account_id:
+        minimum: 1
+        type: integer
+      to_account_id:
+        minimum: 1
+        type: integer
+    required:
+    - amount
+    - currency
+    - from_account_id
+    - to_account_id
+    type: object
+  controller.createUserRequest:
+    properties:
+      full_name:
+        type: string
+      password:
+        type: string
+    type: object
+  controller.findUserByNameRequest:
+    properties:
+      full_name:
+        type: string
+    required:
+    - full_name
+    type: object
+  controller.getAccountByCurrencyRequest:
+    properties:
+      currency:
+        type: string
+    required:
+    - currency
+    type: object
+  controller.restoreUserRequest:
+    properties:
+      full_name:
+        type: string
+    required:
+    - full_name
+    type: object
+  models.Account:
+    properties:
+      active:
+        type: boolean
+      balance:
+        type: integer
+      createdAt:
+        type: string
+      currency:
+        type: string
+      deletedAt:
+        type: string
+      id:
+        type: integer
+      phoneNumber:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: integer
+    type: object
+  models.Transfer:
+    properties:
+      amount:
+        type: integer
+      createdAt:
+        type: string
+      currency:
+        type: string
+      fromAccountID:
+        type: integer
+      id:
+        type: integer
+      toAccountID:
+        type: integer
+    type: object
+  models.UpdateAccount:
+    properties:
+      balance:
+        type: integer
+      currency:
+        type: string
+      id:
+        type: integer
+      phone_number:
+        type: string
+    type: object
+  models.UpdateUser:
+    properties:
+      full_name:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+    type: object
+  models.User:
+    properties:
+      active:
+        type: boolean
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /accounts:
+    patch:
+      consumes:
+      - application/json
+      description: Updates an account's phone number, balance, or currency for the
+        authenticated user
+      parameters:
+      - description: Account update data
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateAccount'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Account'
+        "400":
+          description: Invalid input, account not found, or invalid currency
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing account
+      tags:
+      - accounts
+    post:
+      consumes:
+      - application/json
+      description: Creates a new account for the authenticated user with the provided
+        currency and phone number
+      parameters:
+      - description: Account data
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/controller.createAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Account'
+        "400":
+          description: Invalid input, user not found, account already exists, or invalid
+            currency
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new account
+      tags:
+      - accounts
+  /accounts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an account for the authenticated user by account ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Account deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input, account not found, or non-zero balance
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete an existing account
+      tags:
+      - accounts
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an account by its ID for the authenticated user
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Account'
+        "400":
+          description: Invalid input or account not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get an account by ID
+      tags:
+      - accounts
+  /accounts/{id}/balance:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an account balance by its ID for the authenticated user
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Account'
+        "400":
+          description: Invalid input or account not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get an account balance by ID
+      tags:
+      - accounts
+  /accounts/currency:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all accounts with the specified currency for the authenticated
+        user
+      parameters:
+      - description: Currency
+        in: body
+        name: currency
+        required: true
+        schema:
+          $ref: '#/definitions/controller.getAccountByCurrencyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Account'
+            type: array
+        "400":
+          description: Invalid input or invalid currency
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get accounts by currency
+      tags:
+      - accounts
+  /accounts/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an account by its ID for the authenticated user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Account'
+        "400":
+          description: Invalid input or account not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get an account by user ID
+      tags:
+      - accounts
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user with full name and password, returns a token
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/controller.authenticateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Contains user and token
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid credentials
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Authenticate a user
+      tags:
+      - users
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user with the provided full name and password
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controller.createUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid input or user already exists
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - users
+  /transfers:
+    post:
+      consumes:
+      - application/json
+      description: Creates a transfer between two accounts for the authenticated user
+        with the specified amount and currency
+      parameters:
+      - description: Transfer data
+        in: body
+        name: transfer
+        required: true
+        schema:
+          $ref: '#/definitions/controller.createTransferRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Transfer'
+        "400":
+          description: Invalid input, invalid user ID, mismatched currencies, or insufficient
+            balance
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new transfer
+      tags:
+      - transfers
+  /users:
+    patch:
+      consumes:
+      - application/json
+      description: Updates user information based on the provided ID and optional
+        fields
+      parameters:
+      - description: Updated user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUser'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input or user not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid ID or user has dependencies
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid ID or user not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a user by ID
+      tags:
+      - users
+  /users/find:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves users matching the provided full name
+      parameters:
+      - description: User full name
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controller.findUserByNameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Invalid input or user not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Find users by name
+      tags:
+      - users
+  /users/inactive:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of inactive users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Invalid input or unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get inactive users
+      tags:
+      - users
+  /users/restore:
+    post:
+      consumes:
+      - application/json
+      description: Restores a user by their full name
+      parameters:
+      - description: User full name
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controller.restoreUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input or user not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Restore a deleted user
+      tags:
+      - users
+swagger: "2.0"
